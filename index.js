@@ -55,7 +55,7 @@ async function run() {
 
     app.get("/jobs/:email", async(req, res)=>{
       const email = req.params.email;
-      const result = await jobsCollection.find({buyer_email : email}).toArray();
+      const result = await jobsCollection.find({'buyer.email' : email}).toArray();
       res.send(result)
     })
 
@@ -84,6 +84,24 @@ async function run() {
       const result = await jobsCollection.deleteOne({_id : new ObjectId(id)});
       res.send(result)
   })
+
+
+
+  app.put('/update/:id', async (req, res) => {
+    const id = req.params.id
+    const jobData = req.body
+    const updated = {
+      $set: jobData,
+    }
+    const query = { _id: new ObjectId(id) }
+    const options = { upsert: true }
+    const result = await jobsCollection.updateOne(query, updated, options)
+    console.log(result)
+    res.send(result)
+  })
+
+ 
+  
 
 
 
