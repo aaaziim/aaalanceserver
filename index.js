@@ -66,6 +66,13 @@ async function run() {
     })
 
 
+    app.get("/bid-request/:email", async(req, res)=>{
+      const email = req.params.email;
+      const result = await bidsCollection.find({'buyer.email' : email}).toArray();
+      res.send(result)
+    })
+
+
     app.post("/jobs", async(req, res)=>{
       const newJob = req.body;
       const result = await jobsCollection.insertOne(newJob)
