@@ -103,7 +103,20 @@ async function run() {
     const query = { _id: new ObjectId(id) }
     const options = { upsert: true }
     const result = await jobsCollection.updateOne(query, updated, options)
-    console.log(result)
+    res.send(result)
+  })
+
+
+
+
+  app.patch('/update-status/:id', async (req, res) => {
+    const id = req.params.id
+    const status = req.body
+    const query = { _id: new ObjectId(id) }
+    const updated = {
+      $set: status,
+    }
+    const result = await bidsCollection.updateOne(query, updated)
     res.send(result)
   })
 
