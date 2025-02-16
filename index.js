@@ -168,19 +168,30 @@ app.get("/logout", (req, res)=>{
     })
 
     app.post("/bids", async(req, res)=>{
-      const bidData = req.body;
+      const bidData = req.body
 
-      const alreadyApplied = bidsCollection.findOne({
-        email : bidData.email,
-        jobId: bidData.jobId
-      })
-
-      if(alreadyApplied){
-        return res
-        .status(400)
-        .send("You Have Already Applied For This Job")
+      // check if its a duplicate request
+      const query = {
+        email: bidData.email,
+        jobId: bidData.jobId,
       }
+      const alreadyApplied = await bidsCollection.findOne(query)
+      console.log(alreadyApplied)
+      if (alreadyApplied) {
+        return res
+          .status(400)
+          .send('You have already placed a bid on this job.')
+      }
+
       const result = await bidsCollection.insertOne(bidData)
+
+      // update bid count in jobs collection
+      const updateDoc = {
+        $inc: { bid_count: 1 },
+      }
+      const jobQuery = { _id: new ObjectId(bidData.jobId) }
+      const updateBidCount = await jobsCollection.updateOne(jobQuery, updateDoc)
+      console.log(updateBidCount)
       res.send(result)
     })
 
