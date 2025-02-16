@@ -169,6 +169,17 @@ app.get("/logout", (req, res)=>{
 
     app.post("/bids", async(req, res)=>{
       const bidData = req.body;
+
+      const alreadyApplied = bidsCollection.findOne({
+        email : bidData.email,
+        jobId: bidData.jobId
+      })
+
+      if(alreadyApplied){
+        return res
+        .status(400)
+        .send("You Have Already Applied For This Job")
+      }
       const result = await bidsCollection.insertOne(bidData)
       res.send(result)
     })
